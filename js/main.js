@@ -1,5 +1,7 @@
 'use strict'
 
+// import Swiper from 'https://unpkg.com/swiper/swiper-bundle.esm.browser.min.js';
+
 let login = localStorage.getItem('loginDelivery');
 
 const cartButton = document.querySelector("#cart-button");
@@ -259,3 +261,15 @@ function init(){
 }
 
 init();
+
+//Slider
+new Swiper('.swiper-container', {
+    sliderPerView: 1,
+    loop: true,
+    autoplay: true,
+    effect: 'coverflow',
+    scrollbar:{
+        el: '.swiper-scrollbar',
+        draggable: true
+    }
+})

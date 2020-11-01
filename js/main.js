@@ -18,6 +18,13 @@ const restaurants = document.querySelector('.restaurants');
 const menu = document.querySelector('.menu');
 const logo = document.querySelector('.logo');
 const cardsMenu = document.querySelector('.cards-menu');
+const restaurantTitle = document.querySelector('.restaurant-title');
+const restaurantRating = document.querySelector('.rating');
+const restaurantPrice = document.querySelector('.price');
+const restaurantCategory = document.querySelector('.category');
+const inputSearch = document.querySelector('.input-search');
+
+
 
 const getData = async function (url){
 
@@ -98,7 +105,13 @@ function createCardRestaurant(restaurant) {
 
     const {image, kitchen, name, price, products, time_of_delivery: timeOfDelivery, stars} = restaurant;
 
-    const card = `<a href="restaurant.html" class="card card-restaurant" data-products="${products}">
+    const cardRestaurant = document.createElement('a');
+    cardRestaurant.className = 'card card-restaurant';
+    cardRestaurant.products = products;
+    cardRestaurant.info = {kitchen, name, price, stars };
+
+
+    const card = `
         <img src=${image} alt="image" class="card-image">
             <div class="card-text">
                 <div class="card-heading">
@@ -113,10 +126,9 @@ function createCardRestaurant(restaurant) {
                     <div class="category">${kitchen}</div>
                 </div>                
             </div>
-    </a>
 `;
-
-    cardsRestaurants.insertAdjacentHTML('beforeend', card)
+    cardRestaurant.insertAdjacentHTML('beforeend', card)
+    cardsRestaurants.insertAdjacentElement('beforeend', cardRestaurant)
 }
 
 function createCardGood(product) {
@@ -162,7 +174,16 @@ function openGoods(event) {
         containerPromo.classList.add('hide');
         restaurants.classList.add('hide');
         menu.classList.remove('hide');
-        getData(`./db/${restaurant.dataset.products}`)
+
+        const {name, kitchen, price, stars} = restaurant.info;
+
+        restaurantTitle.textContent = name;
+        restaurantRating.textContent = stars;
+        restaurantPrice.textContent = `от ${price} рублей`;
+        restaurantCategory.textContent = kitchen;
+        location.hesh =`#${name}`;
+
+        getData(`./db/${restaurant.products}`)
             .then(data => {
                 data.forEach(createCardGood)
             })
@@ -189,6 +210,52 @@ function init(){
     });
 
     chekAuth();
+
+    inputSearch.addEventListener('keypress', function (event) {
+
+        if(event.charCode === 13){
+
+            const value = event.target.value;
+
+            if(!value){
+                event.target.style.backgroundColor = 'red';
+                event.target.value = 'What do you want to find?'
+                // event.target.value = '';
+
+                setTimeout(() => {
+                    event.target.style.backgroundColor = '';
+                    event.target.value = '';
+                }, 1500)
+
+                return;
+            }
+                getData('./db/partners.json')
+                .then(data => {
+                    return data.map(item => item.products)
+                })
+                .then(links => {
+                    links.forEach(item => {
+                        getData(`./db/${item}`)
+                            .then(data => {
+
+                                const resultSearch = data.filter(item => item.name.toLowerCase().includes(value.toLowerCase()));
+                                console.log(resultSearch)
+
+                                containerPromo.classList.add('hide');
+                                restaurants.classList.add('hide');
+                                menu.classList.remove('hide');
+
+                                restaurantTitle.textContent = 'Результат поиска';
+                                restaurantRating.textContent = '';
+                                restaurantPrice.textContent = ``;
+                                restaurantCategory.textContent = `Разное`;
+                                resultSearch.forEach(createCardGood)
+                            })
+                    })
+
+                })
+        }
+    })
 }
 
 init();

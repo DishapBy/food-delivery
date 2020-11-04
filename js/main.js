@@ -27,7 +27,7 @@ const restaurantCategory = document.querySelector('.category');
 const inputSearch = document.querySelector('.input-search');
 const modalBody = document.querySelector('.modal-body');
 const modalPrice = document.querySelector('.modal-pricetag');
-
+const buttonClearCart = document.querySelector('.clear-cart');
 
 const cart = [];
 
@@ -50,8 +50,6 @@ function toggleModalAuth() {
 }
 
 function authorized() {
-    // console.log(login)
-    // console.log(userName)
     userName.textContent = login;
 
     function logOut() {
@@ -243,7 +241,6 @@ function addToCard(event) {
         } else {
             cart.push({id, title, cost, count: 1})
         }
-        console.log(cart)
     }
 }
 
@@ -257,9 +254,9 @@ function renderCart() {
             <span class="food-name">${title}</span>
             <strong class="food-price">${cost}</strong>
             <div class="food-counter">
-                <button class="counter-button">-</button>
+                <button class="counter-button counter-minus" data-id="${id}">-</button>
                 <span class="counter">${count}</span>
-                <button class="counter-button">+</button>
+                <button class="counter-button counter-plus" data-id="${id}">+</button>
             </div>
         </div>
         `;
@@ -271,9 +268,30 @@ function renderCart() {
         let price = parseFloat(item.cost) * item.count;
         return sum + price;
     }, 0)
-    console.log(totalPrice)
 
     modalPrice.textContent = `${totalPrice} ₽`
+}
+
+function changeCount(event) {
+    const target = event.target;
+
+    if (target.classList.contains('counter-button')){
+        const food = cart.find(item => {
+            return item.id === target.dataset.id
+        })
+
+        if (target.classList.contains('counter-plus')) {
+            food.count++;
+        }
+        if (target.classList.contains('counter-minus')) {
+            food.count--;
+            if(food.count === 0){
+                cart.splice(cart.indexOf(food), 1)
+            }
+        }
+
+        renderCart();
+    }
 }
 
 function init() {
@@ -286,7 +304,14 @@ function init() {
         toggleModal();
     });
 
+    buttonClearCart.addEventListener('click', () => {
+        cart.length = 0;
+        renderCart();
+    })
+
     close.addEventListener("click", toggleModal);
+
+    modalBody.addEventListener('click', changeCount);
 
     if (cardsRestaurants !== null) {
         cardsRestaurants.addEventListener('click', openGoods);
@@ -330,7 +355,6 @@ function init() {
                             .then(data => {
 
                                 const resultSearch = data.filter(item => item.name.toLowerCase().includes(value.toLowerCase()));
-                                console.log(resultSearch)
 
                                 containerPromo.classList.add('hide');
                                 restaurants.classList.add('hide');

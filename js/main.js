@@ -164,26 +164,6 @@ function createCardGood(product) {
       </div>
      </div>
     `)
-    // card.insertAdjacentHTML('beforeend', `
-    // <a href="restaurant.html" class="card card-restaurant">
-    //     <img src=${image} alt="image" class="card-image">
-    //         <div class="card-text">
-    //             <div class="card-heading">
-    //                 <h3 class="card-title">${name}</h3>
-    //                 <span class="card-tag tag">50 мин</span>
-    //             </div>
-    //             <div class="card-info">
-    //             ${description}
-    //                 <div class="rating">
-    //                     4.5
-    //                 </div>
-    //                 <div class="price">От ${price} ₽</div>
-    //                 <div class="category">Пицца</div>
-    //             </div>
-    //         </div>
-    // </a>
-    // `);
-
     cardsMenu.insertAdjacentElement('beforeend', card);
 }
 
